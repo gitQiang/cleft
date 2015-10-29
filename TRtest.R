@@ -1,14 +1,14 @@
 source("~/.Rprofile")
 ## transmitted test
 ## candiate gene list
-lf1 <- read.delim("../data/Combined CLCP gene list.txt",blank.lines.skip = TRUE)
+lf1 <- read.delim("../data/Combined_CLCP_gene_list.txt",blank.lines.skip = TRUE)
 lf2 <- read.delim("../data/Summary_CLCP.txt",blank.lines.skip = TRUE)
 cangene <- union(lf1[,"Gene"],lf2[,"Gene"])
 cangene <- setdiff(cangene,"")
 qwt(cangene,file="../data/candidateG.txt")
 
 ## pedigree information
-pedf <- read.delim("../data/CLCP VCF Key.txt")
+pedf <- read.delim("../data/CLCP_VCF_Key.txt")
 pedf <- pedf[order(pedf[,3]),]
 peds <- matrix(-9,dim(pedf)[1],6)
 peds[,1] <- pedf[,3]
@@ -35,7 +35,7 @@ ids <- setdiff(union(peds[subs,2],union(peds[subs,3],peds[subs,4])),-9)
 qwt(peds[peds[,2] %in% ids,],file="../data/pedigreeSUB.ped")
 
 ## sample IDs
-c <- readLines(con=file("../data/Matt Vivero - CLCP_June2015.vcf","r"),n=202)
+c <- readLines(con=file("../data/CLCP_June2015.vcf","r"),n=202)
 samples <- unlist(strsplit(c[201],"\t"))
 samples <- samples[10:61]
 qwt(samples,file="../data/SamplesID.txt")
