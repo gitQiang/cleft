@@ -1,13 +1,13 @@
 source("~/.Rprofile")
-## transmitted test
-## candiate gene list
+#### transmitted test
+#### candiate gene list
 lf1 <- read.delim("../data/Combined_CLCP_gene_list.txt",blank.lines.skip = TRUE)
 lf2 <- read.delim("../data/Summary_CLCP.txt",blank.lines.skip = TRUE)
 cangene <- union(lf1[,"Gene"],lf2[,"Gene"])
 cangene <- setdiff(cangene,"")
 qwt(cangene,file="../data/candidateG.txt")
 
-## pedigree information
+#### pedigree information
 pedf <- read.delim("../data/CLCP_VCF_Key.txt")
 pedf <- pedf[order(pedf[,3]),]
 peds <- matrix(-9,dim(pedf)[1],6)
@@ -34,33 +34,20 @@ subs <- peds[,3]!=-9| peds[,4]!=-9
 ids <- setdiff(union(peds[subs,2],union(peds[subs,3],peds[subs,4])),-9)
 qwt(peds[peds[,2] %in% ids,],file="../data/pedigreeSUB.ped")
 
-## sample IDs
+#### sample IDs
 c <- readLines(con=file("../data/CLCP_June2015.vcf","r"),n=202)
 samples <- unlist(strsplit(c[201],"\t"))
 samples <- samples[10:61]
 qwt(samples,file="../data/SamplesID.txt")
 
 
-## local to use GATK PhasebyTranssmisson
-a <- read.table("Matt Vivero - CLCP_June2015.vcf")
-tes <- unlist(read.table("test.txt"))
-c <- readLines(con=file("Matt Vivero - CLCP_June2015.vcf","r"),n=300)
-samples <- unlist(strsplit(c[201],"\t"))
-samples <- samples[10:61]
-source("~/.Rprofile")
-qwt(samples,file="SamplesID.txt")
+#### variant lists
 
-b <- a[,c(1:9,match(tes,unlist(strsplit(c[201],"\t"))))]
-num <- sapply(10:17, function(i) grepl("0/0",b[,i]) + grepl("\\./\\.",b[,i]))
-nums <- rowSums(num)
+source("misc.R")
+load("../data/alllist")
+varlist <- filtering(alllist)
+varlist <- varlist[varlist[,"filtered"],]
 
-testvcf <- b[nums<8,]
-qwt(testvcf,file="test.vcf")
-
-con <- file("test.vcf","r")
-testv <- readLines(con)
-
-colns <- unlist(strsplit(c[201],"\t"))
-testv <- c(c[1:200],paste(colns[c(1:9,match(tes,colns))],collapse="\t"),testv)
-qwt(testv,file="testh.vcf")
+onetrio <- peds[49,]
+transmmited(onetrio,varlist,cangene)
 
